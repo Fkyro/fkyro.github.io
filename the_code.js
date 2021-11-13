@@ -6,7 +6,29 @@
 // @author       Someone
 // @match        https://intra.assistants.epita.fr/activity/piscine-2024
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
+// @grant       GM_setValue
+// @grant       GM_getValue
 // ==/UserScript==
+
+function close_open()
+{
+    var table = document.querySelector(".open_close");
+    if (table.style.display === "none")
+    {
+        GM_setValue("display", "block");
+    }
+    else
+    {
+        GM_setValue("display", "none");
+    }
+    table.setAttribute("style", "display:" + GM_getValue("display") + " !important");
+}
+
+if (GM_getValue("display") == undefined)
+{
+    GM_setValue("display", "none");
+}
+
 var value;
 let url = 'https://fkyro.github.io/';
 
@@ -15,14 +37,20 @@ var inter = setInterval(() => {
     var already_title = document.querySelector(".notions_exercise_title");
     if (already_title == null)
     {
+        var title = document.querySelector("h2");
         var notions_exercise_tile = document.createElement("h2");
         notions_exercise_tile.className = "notions_exercise_title";
         var notions_exercise_title_texte = document.createTextNode("Notions par exercise");
         notions_exercise_tile.appendChild(notions_exercise_title_texte);
-        var title = document.querySelector("h2");
         title.parentNode.insertBefore(notions_exercise_tile, title);
+        var open_close = document.createElement("button");
+        open_close.addEventListener('click', close_open);
+        open_close.innerHTML = "Ouvrir/Fermer tableau"
+        title.parentNode.insertBefore(open_close, title);
         var table = document.createElement("table");
-        table.border = "3"
+        table.className = "open_close";
+        table.border = "3";
+        table.setAttribute("style", "display:" + GM_getValue("display") + " !important");
         var thead = document.createElement("thead");
         table.appendChild(thead);
         var trHead = document.createElement("tr");
@@ -36,7 +64,6 @@ var inter = setInterval(() => {
         });
         var tbody = document.createElement("tbody");
         table.appendChild(tbody);
-        console.log(value);
         for (let key in value)
         {
             var tr = document.createElement("tr");
@@ -68,4 +95,4 @@ var inter = setInterval(() => {
                 .forEach(tr => tbody.appendChild(tr) );
         })));
     }
-}, 1000); 
+}, 1000);
