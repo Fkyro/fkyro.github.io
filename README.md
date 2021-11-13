@@ -1,4 +1,6 @@
 # fkyro.github.io
+## the_code.js is the part you need to use in TamperMonkey, the other .js file is just here to show how I get the value
+
 ## How is it working ?
 Basically I fetch the informations thanks to an another machine which gets each day each page page with a 1 minute interval (to be as gentle as possible with the servers).
 
