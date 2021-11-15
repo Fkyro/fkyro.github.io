@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Tableau de notion
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      2.0
 // @description  Pour le tableau des notions (ne me tener pas responsable si c'est pas juste)
 // @author       Someone
 // @match        https://intra.assistants.epita.fr/activity/piscine-2024
@@ -27,15 +27,25 @@ function close_open()
 function isDone(key)
 {
     var nonselected = document.querySelectorAll("[theme='small success icon']");
-    var len = nonselected.length
-    for (let i = 0; i < len; i++)
+    for (let elem of nonselected)
     {
-        if (key == nonselected[i].parentNode.href.split("/")[5])
+        if (key == elem.parentNode.href.split("/")[5])
         {
             return true;
         }
     }
-    return false
+    return false;
+}
+
+function color()
+{
+    var rows = document.querySelectorAll(".row");
+    rows.forEach( (val) => {
+        if (isDone(val.querySelector("td").textContent))
+        {
+            val.bgColor = "green";
+        }
+    })
 }
 
 if (GM_getValue("display") == undefined)
@@ -49,9 +59,9 @@ let url = 'https://fkyro.github.io/';
 fetch(url).then(res => res.json()).then(out => {value = out});
 var inter = setInterval(() => {
     var already_title = document.querySelector(".notions_exercise_title");
-    if (already_title == null)
+    var title = document.querySelector("h2");
+    if (already_title == null && title != null)
     {
-        var title = document.querySelector("h2");
         var notions_exercise_tile = document.createElement("h2");
         notions_exercise_tile.className = "notions_exercise_title";
         var notions_exercise_title_texte = document.createTextNode("Notions par exercise");
@@ -81,10 +91,7 @@ var inter = setInterval(() => {
         for (let key in value)
         {
             var tr = document.createElement("tr");
-            if (isDone(key))
-            {
-                tr.bgColor = "green";
-            }
+            tr.className = "row";
             tbody.appendChild(tr);
             var td_title = document.createElement("td");
             tr.appendChild(td_title);
@@ -112,5 +119,9 @@ var inter = setInterval(() => {
                 .sort(comparer(Array.from(th.parentNode.children).indexOf(th), this.asc = !this.asc))
                 .forEach(tr => tbody.appendChild(tr) );
         })));
+    }
+    if (title != null)
+    {
+        color();
     }
 }, 1000);
