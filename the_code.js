@@ -24,6 +24,20 @@ function close_open()
     table.setAttribute("style", "display:" + GM_getValue("display") + " !important");
 }
 
+function isDone(key)
+{
+    var nonselected = document.querySelectorAll("[theme='small success icon']");
+    var len = nonselected.length
+    for (let i = 0; i < len; i++)
+    {
+        if (key == nonselected[i].parentNode.href.split("/")[5])
+        {
+            return true;
+        }
+    }
+    return false
+}
+
 if (GM_getValue("display") == undefined)
 {
     GM_setValue("display", "none");
@@ -67,6 +81,10 @@ var inter = setInterval(() => {
         for (let key in value)
         {
             var tr = document.createElement("tr");
+            if (isDone(key))
+            {
+                tr.bgColor = "green";
+            }
             tbody.appendChild(tr);
             var td_title = document.createElement("td");
             tr.appendChild(td_title);
